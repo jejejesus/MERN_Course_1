@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 // GET all workouts
 const getAllWorkouts = async (req, res) => {
     try {
-        const workouts = await Workout.find({}).sort({createdAt: -1});
+        const workouts = await Workout.find({}).sort({ createdAt: -1 });
         res.status(200).json(workouts);
     } catch (err) {
-        res.status(404).json({error: err.message});
+        res.status(404).json({ error: err.message });
     }
 };
 
@@ -15,25 +15,34 @@ const getAllWorkouts = async (req, res) => {
 const getWorkoutById = async (req, res) => {
     const {id} = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({message: 'No workout with that id'});
+        return res.status(404).json({ message: 'No workout with that id' });
     }
     try {
         const workout = await Workout.findById(id);
         res.status(200).json(workout);
     } catch (err) {
-        res.status(404).json({error: err.message});
+        res.status(404).json({ error: err.message });
     }
 }
 
 // POST new workout
 const createWorkout = async (req, res) => {
     const {title, reps, load} = req.body;
+
+    let emptyFields = [];
+    if (!title) emptyFields.push('Title');
+    if (!reps) emptyFields.push('Reps');
+    if (!load) emptyFields.push('Load');
+    if (emptyFields.length > 0) {
+        return res.status(400).json({ error: `Missing fields: ${emptyFields.join(', ')}` });
+    }
+
     // add document to db
     try {
-        const workout = await Workout.create({title, reps, load});
+        const workout = await Workout.create({ title, reps, load });
         res.status(201).json(workout);
     } catch (err) {
-        res.status(400).json({error: err.message});
+        res.status(400).json({ error: err.message} );
     }
 };
 
@@ -41,13 +50,13 @@ const createWorkout = async (req, res) => {
 const deleteWorkoutById = async (req, res) => {
     const {id} = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({message: 'No workout with that id'});
+        return res.status(404).json({ message: 'No workout with that id' });
     }
     try {
         const workout = await Workout.findByIdAndDelete(id);
         res.status(200).json(workout);
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({ error: err.message });
     }
 }
 
@@ -56,13 +65,13 @@ const updateWorkoutById = async (req, res) => {
     const {id} = req.params;
     const {title, reps, load} = req.body;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({message: 'No workout with that id'});
+        return res.status(404).json({ message: 'No workout with that id' });
     }
     try {
-        const workout = await Workout.findByIdAndUpdate(id, {...req.body});
+        const workout = await Workout.findByIdAndUpdate(id, { ...req.body });
         res.status(200).json(workout);
     } catch (err) {
-        res.status(500).json({error: err.message});
+        res.status(500).json({ error: err.message });
     }
 }
 
