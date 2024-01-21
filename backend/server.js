@@ -21,7 +21,7 @@ app.use('/api/workouts', workoutsRouter);
 app.use('/api/users', usersRouter);
 
 // connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         console.log("Connected to MongoDB");
         // listen for requests
